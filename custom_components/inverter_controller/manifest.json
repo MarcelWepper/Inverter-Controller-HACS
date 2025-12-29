@@ -1,0 +1,9 @@
+{
+  "domain": "inverter_controller",
+  "name": "Inverter Controller",
+  "codeowners": ["@marcelwepper"],
+  "config_flow": true,
+  "dependencies": ["number"],
+  "iot_class": "local_polling",
+  "version": "1.0.0"
+}

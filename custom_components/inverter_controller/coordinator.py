@@ -1,0 +1,85 @@
+"""Reactive logic for Inverter Controller."""
+from __future__ import annotations
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
+from homeassistant.helpers.event import async_track_state_change_event
+from .const import DOMAIN, LOGGER, DEFAULT_MIN_POWER, DEFAULT_MAX_POWER, DEFAULT_STEP_SIZE, DEFAULT_ALPHA
+
+class InverterCoordinator(DataUpdateCoordinator):
+    """Processes grid/solar data and stores state for sensors."""
+
+    def __init__(self, hass, entry):
+        super().__init__(hass, LOGGER, name=DOMAIN)
+        self.config_entry = entry
+        self.solar_ema = None
+        self.hard_boost = False
+        self.enabled = True
+        
+        self.data = {
+            "target_power": 100,
+            "solar_ema": 0.0,
+            "house_load": 0.0,
+            "solar_yield": 0.0,
+            "logic_state": "Initializing",
+            "hard_boost": False,
+            "guard_active": False,
+        }
+
+        # Fixed cleanup registration
+        self.config_entry.async_on_unload(
+            async_track_state_change_event(
+                hass, 
+                [self.get_cfg("grid_sensor"), self.get_cfg("soc_sensor"), self.get_cfg("solar_sensor")], 
+                self._async_handle_update
+            )
+        )
+
+    def get_cfg(self, key, default=None):
+        return self.config_entry.options.get(key, self.config_entry.data.get(key, default))
+
+    async def _async_handle_update(self, event):
+        try:
+            grid_p = float(self.hass.states.get(self.get_cfg("grid_sensor")).state or 0)
+            soc = float(self.hass.states.get(self.get_cfg("soc_sensor")).state or 0)
+            solar_raw = float(self.hass.states.get(self.get_cfg("solar_sensor")).state or 0)
+            limit_id = self.get_cfg("inverter_limit_entity")
+            current = float(self.hass.states.get(limit_id).state or 100)
+        except (ValueError, AttributeError, TypeError): return
+
+        # Statistics
+        alpha = self.get_cfg("solar_ema_alpha", DEFAULT_ALPHA)
+        house_load = current + grid_p
+        yield_ratio = (current / solar_raw * 100) if solar_raw > 0 else 0
+
+        # EMA
+        if self.solar_ema is None: self.solar_ema = solar_raw
+        else: self.solar_ema = (alpha * solar_raw) + ((1 - alpha) * self.solar_ema)
+
+        # Logic
+        if not self.hard_boost and soc >= 96: self.hard_boost = True
+        elif self.hard_boost and soc <= 94: self.hard_boost = False
+
+        state_desc, desired = "Balanced", current
+        step = self.get_cfg("step_size", DEFAULT_STEP_SIZE)
+        
+        if self.hard_boost: desired, state_desc = desired + step, "Boosting (High SoC)"
+        elif grid_p > 10: desired, state_desc = desired + step, "Importing (Increase)"
+        elif grid_p < -60: desired, state_desc = desired - step, "Exporting (Decrease)"
+
+        guard = solar_raw < 100
+        if guard: desired, state_desc = 100, "Guard Active (Low Sun)"
+        
+        target = max(self.get_cfg("min_power", DEFAULT_MIN_POWER), min(self.get_cfg("max_power", DEFAULT_MAX_POWER), desired))
+
+        if self.enabled and target != current:
+            await self.hass.services.async_call(limit_id.split(".")[0], "set_value", {"entity_id": limit_id, "value": target})
+
+        self.data = {
+            "target_power": target,
+            "solar_ema": round(self.solar_ema, 1),
+            "house_load": round(house_load, 1),
+            "solar_yield": round(yield_ratio, 1),
+            "logic_state": state_desc,
+            "hard_boost": self.hard_boost,
+            "guard_active": guard,
+        }
+        self.async_set_updated_data(self.data)

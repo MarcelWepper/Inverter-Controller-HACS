@@ -4,6 +4,8 @@
   "codeowners": ["@marcelwepper"],
   "config_flow": true,
   "dependencies": ["number"],
+  "documentation": "https://github.com/MarcelWepper/Inverter-Controller-HACS",
+  "issue_tracker": "https://github.com/MarcelWepper/Inverter-Controller-HACS/issues",
   "iot_class": "local_polling",
   "version": "1.0.0"
 }

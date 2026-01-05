@@ -2,6 +2,16 @@
 
 A reactive, event-driven power balancing integration for Home Assistant. It dynamically adjusts your inverter's output limit based on real-time grid consumption, battery state of charge (SoC), and solar production.
 
+# 🔋 Inverter Controller for Home Assistant
+
+**A custom Home Assistant integration that allows you to control your inverter with configurable parameters.**
+
+[![release](https://img.shields.io/github/v/release/MarcelWepper/Inverter-Controller-HACS?include_prereleases&style=flat-square)](https://github.com/MarcelWepper/Inverter-Controller-HACS/releases)
+[![HACS Integration](https://img.shields.io/badge/HACS-Integration-blue.svg?style=flat-square)](https://github.com/hacs/integration)
+[![License](https://img.shields.io/github/license/MarcelWepper/Inverter-Controller-HACS?style=flat-square&color=orange)](https://github.com/MarcelWepper/Inverter-Controller-HACS/blob/main/LICENSE)
+
+[![Open your Home Assistant instance and open the repository in HACS.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=MarcelWepper&repository=Inverter-Controller-HACS&category=integration)
+
 ## 🚀 Key Features
 
 * **Reactive Power Balancing**: Unlike timer-based scripts, this integration listens for state changes and adjusts power limits instantly as your house load shifts.

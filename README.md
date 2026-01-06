@@ -6,11 +6,11 @@ A reactive, event-driven power balancing integration for Home Assistant. It dyna
 
 **A custom Home Assistant integration that allows you to control your inverter with configurable parameters.**
 
-[![release](https://img.shields.io/github/v/release/MarcelWepper/Inverter-Controller-HACS?include_prereleases&style=flat-square)](https://github.com/MarcelWepper/Inverter-Controller-HACS/releases)
+[![release](https://img.shields.io/github/v/release/MarcelWepper/Inverter-Controller?include_prereleases&style=flat-square)](https://github.com/MarcelWepper/Inverter-Controller/releases)
 [![HACS Integration](https://img.shields.io/badge/HACS-Integration-blue.svg?style=flat-square)](https://github.com/hacs/integration)
-[![License](https://img.shields.io/github/license/MarcelWepper/Inverter-Controller-HACS?style=flat-square&color=orange)](https://github.com/MarcelWepper/Inverter-Controller-HACS/blob/main/LICENSE)
+[![License](https://img.shields.io/github/license/MarcelWepper/Inverter-Controller?style=flat-square&color=orange)](https://github.com/MarcelWepper/Inverter-Controller/blob/main/LICENSE)
 
-[![Open your Home Assistant instance and open the repository in HACS.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=MarcelWepper&repository=Inverter-Controller-HACS&category=integration)
+[![Open your Home Assistant instance and open the repository in HACS.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=MarcelWepper&repository=Inverter-Controller&category=integration)
 
 ## 🚀 Key Features
 
